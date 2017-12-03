@@ -17,7 +17,7 @@ app.post('/todos', (req, res) => {
 
     todo.save()
         .then(savedTodo => {
-            res.send(savedTodo, 200);
+            res.send(savedTodo);
         })
         .catch(err => {
             res.status(400).send(err);
@@ -26,4 +26,8 @@ app.post('/todos', (req, res) => {
 
 app.listen(3000, () => {
     console.log('server is up');
-})
+});
+
+module.exports = {
+    app
+};
