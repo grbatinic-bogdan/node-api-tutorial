@@ -54,3 +54,9 @@ describe('POST /todos', () => {
             })
     });
 })
+
+describe('GET /todos', () => {
+    it('should return all todos', () => {
+
+    })
+})
