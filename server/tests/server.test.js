@@ -83,6 +83,9 @@ describe('GET /todos', () => {
 
 describe('GET /todos/:id', () => {
     it('should return one todo', (done) => {
-
-    })
+        /*
+        request(app)
+            .get('/')
+        */
+    });
 });
