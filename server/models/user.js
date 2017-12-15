@@ -58,6 +58,25 @@ UserSchema.methods = {
     toJSON: function() {
         const userObject = this.toObject();
         return _.pick(userObject, ['_id', 'email']);
+    },
+};
+
+UserSchema.statics = {
+    findByToken: function(token) {
+        // const User = this;
+        const secret = 'mySuperSecret';
+        let decoded = undefined;
+        try {
+            decoded = jwt.verify(token, secret);
+        } catch(err) {
+            return Promise.reject('Unathorized');
+        }
+
+        return this.findOne({
+            _id: decoded._id,
+            'tokens.token': token,
+            'tokens.access': 'auth'
+        });
     }
 };
 

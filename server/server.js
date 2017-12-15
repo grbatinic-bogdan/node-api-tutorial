@@ -12,6 +12,8 @@ const port = process.env.PORT;
 
 const { mongoose } = require('./db/mongoose');
 
+const { authenticate } = require('./middleware/authenticate');
+
 app.use(bodyParser.json());
 
 app.post('/todos', (req, res) => {
@@ -128,6 +130,27 @@ app.post('/users', (req, res) => {
             console.log(error);
             res.status(400).send(err);
         });
+});
+
+
+
+app.get('/users/me', authenticate, (req, res) => {
+    res.send(req.user);
+    /*
+    const token = req.header('x-auth');
+
+    User.findByToken(token)
+        .then(user => {
+            if (!user) {
+                return Promise.reject('User not found');
+            }
+
+            res.send(user);
+        })
+        .catch(error => {
+            res.status(401).send({});
+        });
+    */
 });
 
 app.listen(port, () => {
