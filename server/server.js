@@ -126,7 +126,7 @@ app.post('/users', (req, res) => {
             res.header('x-auth', token).send(user.toJSON());
         })
         .catch(err => {
-            console.log(err.toString());
+            //console.log(err.toString());
             //res.status(400).send(err.toString());
             res.status(400).send();
         });
