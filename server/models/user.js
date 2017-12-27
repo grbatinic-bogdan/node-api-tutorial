@@ -78,6 +78,20 @@ UserSchema.statics = {
             'tokens.token': token,
             'tokens.access': 'auth'
         });
+    },
+    findByCredentials: function(email, password) {
+        return this.findOne({email})
+            .then((user) => {
+                if (!user) {
+                    return Promise.reject();
+                }
+                return new Promise((resolve, reject) => {
+                    bcrypt.compare(password, user.password, (err, res) => {
+                        (res) ? resolve(user) : reject();
+                        // return (res) ? Promise.resolve(user) : Promise.reject();
+                    });
+                });
+            })
     }
 };
 

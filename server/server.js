@@ -3,6 +3,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const { ObjectId } = require('mongodb');
 const _ = require('lodash');
+const bcrypt = require('bcryptjs');
 
 const { Todo } = require('./models/todo');
 const { User } = require('./models/user');
@@ -125,7 +126,7 @@ app.post('/users', (req, res) => {
             res.header('x-auth', token).send(user.toJSON());
         })
         .catch(err => {
-            //console.log(err.toString());
+            console.log(err.toString());
             //res.status(400).send(err.toString());
             res.status(400).send();
         });
@@ -135,22 +136,32 @@ app.post('/users', (req, res) => {
 
 app.get('/users/me', authenticate, (req, res) => {
     res.send(req.user);
-    /*
-    const token = req.header('x-auth');
-
-    User.findByToken(token)
-        .then(user => {
-            if (!user) {
-                return Promise.reject('User not found');
-            }
-
-            res.send(user);
-        })
-        .catch(error => {
-            res.status(401).send({});
-        });
-    */
 });
+
+// POST /users/login {email, password}
+app.post('/users/login', (req, res) => {
+
+    const {email, password} = req.body;
+
+    const userPromise = User.findByCredentials(email, password);
+    const tokenPromise = userPromise.then((user) => {
+        return user.generateAuthToken()
+                .then((token) => {
+                    return Promise.resolve(token, user)
+                })
+    });
+
+    Promise.all([userPromise, tokenPromise])
+        .then((result) => {
+            const user = result[0];
+            const token = result[1];
+
+            res.header('x-auth', token).send(user);
+        })
+        .catch((err) => {
+            res.status(400).send();
+        })
+})
 
 app.listen(port, () => {
     console.log(`server is up and running on port ${port}`);
