@@ -40,11 +40,10 @@ const UserSchema = new mongoose.Schema({
 UserSchema.methods = {
     generateAuthToken: function() {
         const access = 'auth';
-        const secret = 'mySuperSecret';
         const token = jwt.sign({
             _id: this._id.toHexString(),
             access
-        }, secret).toString();
+        }, process.env.JWT_SECRET).toString();
 
         this.tokens.push({
             access,
@@ -74,10 +73,9 @@ UserSchema.methods = {
 UserSchema.statics = {
     findByToken: function(token) {
         // const User = this;
-        const secret = 'mySuperSecret';
         let decoded = undefined;
         try {
-            decoded = jwt.verify(token, secret);
+            decoded = jwt.verify(token, process.env.JWT_SECRET);
         } catch(err) {
             return Promise.reject('Unathorized');
         }
